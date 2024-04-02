@@ -1,0 +1,60 @@
+version: '3.9'
+services:
+  terraria:
+    container_name: terraria
+    build:
+      context: terraria
+      dockerfile: Dockerfile
+      args:
+        TERRARIA_VERSION: '1449'
+    environment:
+      AUTOCREATE: "1"
+      MAX_PLAYERS: "2"
+      WORLDNAME: "fluentd-getstarted"
+    volumes:
+      - ./terraria/worlds:/opt/terraria/worlds
+    ports:
+      - "7777:7777"
+    links:
+      - fluentd
+    depends_on:
+      - fluentd
+    logging:
+      driver: "fluentd"
+      options:
+        tag: "docker.terraria"
+  nginx:
+    container_name: nginx
+    build:
+      context: nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    links:
+      - fluentd
+    depends_on:
+      - fluentd
+    logging:
+      driver: "fluentd"
+      options:
+        tag: "docker.nginx"
+  rsyslog:
+    container_name: rsyslog
+    image: docker.io/rsyslog/syslog_appliance_alpine
+    ports:
+      - "514:514"
+      - "514:514/udp"
+    environment:
+      RSYSLOG_CONF: /config/rsyslog.conf
+    volumes:
+      - ./rsyslog/files/rsyslog.conf:/config/rsyslog.conf
+  fluentd:
+    container_name: fluentd
+    image: docker.io/fluentd
+    volumes:
+      - ./fluentd/files:/fluentd/etc
+    ports:
+      - "5140:5140/udp"
+      - "20001:20001"
+      - "24224:24224"
+      - "24224:24224/udp"

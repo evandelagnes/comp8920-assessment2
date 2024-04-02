@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+source /opt/terraria/files/variables
+
+pipe=/tmp/pipe.pipe
+
+function shutdown () {
+  console "say Shutting down server in 3 seconds..."
+  sleep 3s
+  console "exit"
+  tmuxPid=$(pgrep tmux)
+  while [ -e "/proc/$tmuxPid" ]; do
+    sleep .5
+  done
+  echo "|| Server stopped. ||"
+  rm $pipe
+}
+
+trap shutdown TERM INT
+
+echo "|| Starting server... ||"
+if [ ! -p "$pipe" ]; then
+  mkfifo $pipe
+fi
+
+tmux new-session -d "/opt/terraria/files/TerrariaServer -config /opt/terraria/conf/serverconfig.txt | tee $pipe"
+
+# sometimes the server doesn't start immediately
+# this just pokes it into starting
+console "help"
+
+cat $pipe &
+wait ${!}
+
+echo "|| Finished shutting down. ||"

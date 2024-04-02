@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+AUTOCREATEx="autocreate=${AUTOCREATE}"
+DIFFICULTYx="difficulty=${DIFFICULTY}"
+BANLISTx="banlist=${BANLIST}"
+LANGUAGEx="language=${LANGUAGE}"
+MAXPLAYERSx="maxplayers=${MAXPLAYERS}"
+if [ "${MOTD}" != "" ]; then
+  MOTDx="motd=${MOTD}"
+fi
+NPCSTREAMx="npcstream=${NPCSTREAM}"
+if [ "${PASSWORD}" != "" ]; then
+  PASSWORDx="password=${PASSWORD}"
+fi
+PORTx="port=7777"
+PRIORITYx="priority=${PRIORITY}"
+SECUREx="secure=${SECURE}"
+if [ "${SEED}" != "" ]; then
+  SEEDx="seed=${SEED}"
+fi
+UPNPx="upnp=${UPNP}"
+WORLDNAMEx="worldname=${WORLDNAME}"
+WORLDx="world=/opt/terraria/worlds/${WORLDNAME}.wld"
+WORLDPATHx="worldpath=${WORLDPATH}"
+
+if [ -e /opt/terraria/conf/serverconfig.txt ]; then
+rm /opt/terraria/conf/serverconfig.txt
+fi
+for argument in $AUTOCREATEx $DIFFICULTYx $BANLISTx $LANGUAGEx $MAXPLAYERSx $MOTDx $NPCSTREAMx $PASSWORDx $PORTx $PRIORITYx $SEEDx $SECUREx $UPNPx $WORLDNAMEx $WORLDx $WORLDPATHx; do
+echo $argument >> /opt/terraria/conf/serverconfig.txt
+done
